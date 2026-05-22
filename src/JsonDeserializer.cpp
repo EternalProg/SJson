@@ -54,34 +54,41 @@ JsonValue deserialize_value(std::string_view json_sv, std::size_t &pos);
 
 // "key": value
 JsonValue deserialize_object(std::string_view json_sv, std::size_t &pos) {
-  JsonValue obj;
+  JsonObject obj;
+  ++pos; // skip opening '{'
 
-  for (char ch = next(json_sv.begin(), pos); ch != '}';
-       ch = next(json_sv.begin(), pos)) {
-    auto key_start = json_sv.find('\"');
-    auto key_end = json_sv.find(key_start + 1, '\"');
+  for (char ch = next(json_sv, pos); ch != '}';
+       ch = next(json_sv, pos)) {
+    auto key_start = json_sv.find('\"', pos);
+    auto key_end = json_sv.find('\"', key_start + 1);
     std::string key =
         std::string(json_sv.substr(key_start + 1, key_end - key_start - 1));
 
-    auto colomn = json_sv.find(':');
+    auto colomn = json_sv.find(':', key_end);
     pos = colomn + 1;
 
     obj[key] = deserialize_value(json_sv, pos);
+
+    if (json_sv[pos] == ',') ++pos; // skip comma
   }
 
+  ++pos; // skip closing '}'
   return obj;
 }
 
 // [value, value]
 JsonArray deserialize_array(std::string_view json_sv, std::size_t &pos) {
   JsonArray array;
+  ++pos; // skip opening '['
 
-  for (char ch = next(json_sv.begin(), pos); ch != ']';
-       ch = next(json_sv.begin(), pos)) {
-    ++pos; // skip comma
+  for (char ch = next(json_sv, pos); ch != ']';
+       ch = next(json_sv, pos)) {
     array.push_back(deserialize_value(json_sv, pos));
+
+    if (json_sv[pos] == ',') ++pos; // skip comma
   }
 
+  ++pos; // skip closing ']'
   return array;
 }
 
@@ -92,7 +99,7 @@ JsonPrimitiveType deserialize_primitive(std::string_view json_sv,
   char ch = next(json_sv, pos);
   if (ch == '\"') {
     auto value_end = json_sv.find('\"', pos + 1);
-    value = std::string(json_sv.substr(pos + 1, value_end));
+    value = std::string(json_sv.substr(pos + 1, value_end - pos - 1));
     pos = value_end + 1;
   } else if (std::isdigit(ch)) {
     auto value_end = json_sv.find_first_not_of("0123456789", pos);
