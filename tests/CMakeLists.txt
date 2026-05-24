@@ -1,6 +1,6 @@
 add_executable(
   sjson_deserializer_test
-  sjson_deserializer_test.cpp
+  sjson_tests.cpp
 )
 
 include_directories(
