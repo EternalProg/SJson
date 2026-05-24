@@ -3,8 +3,6 @@ project(SJson)
 
 add_library(SJsonLib src/JsonDeserializer.cpp src/JsonValue.cpp)
 
-add_executable(SJson main.cpp)
-target_link_libraries(SJson SJsonLib)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
