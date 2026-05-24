@@ -57,8 +57,7 @@ JsonValue deserialize_object(std::string_view json_sv, std::size_t &pos) {
   JsonObject obj;
   ++pos; // skip opening '{'
 
-  for (char ch = next(json_sv, pos); ch != '}';
-       ch = next(json_sv, pos)) {
+  for (char ch = next(json_sv, pos); ch != '}'; ch = next(json_sv, pos)) {
     auto key_start = json_sv.find('\"', pos);
     auto key_end = json_sv.find('\"', key_start + 1);
     std::string key =
@@ -69,7 +68,8 @@ JsonValue deserialize_object(std::string_view json_sv, std::size_t &pos) {
 
     obj[key] = deserialize_value(json_sv, pos);
 
-    if (json_sv[pos] == ',') ++pos; // skip comma
+    if (json_sv[pos] == ',')
+      ++pos; // skip comma
   }
 
   ++pos; // skip closing '}'
@@ -81,11 +81,11 @@ JsonArray deserialize_array(std::string_view json_sv, std::size_t &pos) {
   JsonArray array;
   ++pos; // skip opening '['
 
-  for (char ch = next(json_sv, pos); ch != ']';
-       ch = next(json_sv, pos)) {
+  for (char ch = next(json_sv, pos); ch != ']'; ch = next(json_sv, pos)) {
     array.push_back(deserialize_value(json_sv, pos));
 
-    if (json_sv[pos] == ',') ++pos; // skip comma
+    if (json_sv[pos] == ',')
+      ++pos; // skip comma
   }
 
   ++pos; // skip closing ']'
