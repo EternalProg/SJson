@@ -101,9 +101,16 @@ JsonPrimitiveType deserialize_primitive(std::string_view json_sv,
     auto value_end = json_sv.find('\"', pos + 1);
     value = std::string(json_sv.substr(pos + 1, value_end - pos - 1));
     pos = value_end + 1;
-  } else if (std::isdigit(ch)) {
-    auto value_end = json_sv.find_first_not_of("0123456789", pos);
-    value = std::stoll(std::string(json_sv.substr(pos, value_end - pos)));
+  } else if (std::isdigit(ch) || ch == '-') {
+    auto value_end = json_sv.find_first_not_of("-0123456789", pos);
+    // floating point number
+    if (json_sv[value_end] == '.' || json_sv[value_end] == 'e' ||
+        json_sv[value_end] == 'E') {
+      value_end = json_sv.find_first_not_of("0123456789.eE", pos);
+      value = std::stod(std::string(json_sv.substr(pos, value_end - pos)));
+    } else /* integer */ {
+      value = std::stoll(std::string(json_sv.substr(pos, value_end - pos)));
+    }
     pos = value_end;
   } else if (ch == 't' || ch == 'f') {
     value = (ch == 't');
