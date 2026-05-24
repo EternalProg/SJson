@@ -29,6 +29,12 @@ public:
   bool is_object() const noexcept;
   bool is_array() const noexcept;
   bool is_primitive() const noexcept;
+  bool is_null() const noexcept;
+  bool is_string() const noexcept;
+  bool is_number() const noexcept;
+  bool is_boolean() const noexcept;
+
+  std::size_t size() const;
 
   JsonValue &operator[](int index);
   const JsonValue &operator[](int index) const;

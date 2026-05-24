@@ -10,6 +10,48 @@ JsonValue::JsonValue(JsonObject object) : value_(object) {}
 
 JsonValue::JsonValue(JsonArray array) : value_(array) {}
 
+bool JsonValue::is_null() const noexcept {
+  if (!is_primitive()) {
+    return false;
+  }
+  return std::holds_alternative<std::monostate>(
+      std::get<JsonPrimitiveType>(value_));
+}
+
+bool JsonValue::is_string() const noexcept {
+  if (!is_primitive()) {
+    return false;
+  }
+  return std::holds_alternative<std::string>(
+      std::get<JsonPrimitiveType>(value_));
+}
+
+bool JsonValue::is_number() const noexcept {
+  if (!is_primitive()) {
+    return false;
+  }
+  auto &prim = std::get<JsonPrimitiveType>(value_);
+  return std::holds_alternative<long long>(prim) ||
+         std::holds_alternative<double>(prim);
+}
+
+bool JsonValue::is_boolean() const noexcept {
+  if (!is_primitive()) {
+    return false;
+  }
+  return std::holds_alternative<bool>(std::get<JsonPrimitiveType>(value_));
+}
+
+std::size_t JsonValue::size() const {
+  if (is_array()) {
+    return std::get<JsonArray>(value_).size();
+  } else if (is_object()) {
+    return std::get<JsonObject>(value_).size();
+  } else {
+    throw std::runtime_error("JsonValue is not an array or object");
+  }
+}
+
 bool JsonValue::is_object() const noexcept {
   return std::holds_alternative<JsonObject>(value_);
 }
